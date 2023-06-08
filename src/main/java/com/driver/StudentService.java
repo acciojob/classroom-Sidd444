@@ -27,6 +27,9 @@ public class StudentService {
   public List<String> getStudentsFromTeacher(String teacherName){
       return studentRepository.getStudentsFromTeacher(teacherName);
   }
+  public List<String> getAllStudents(){
+      return studentRepository.getAllStudents();
+  }
   public void deleteTeacher(String teacher){
       studentRepository.deleteTeacher(teacher);
   }
