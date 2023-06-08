@@ -9,80 +9,87 @@ import java.util.List;
 
 @Repository
 public class StudentRepository {
-    private HashMap<String,Student> studentMap;
-    private HashMap<String,Teacher> teacherMap;
-    private HashMap<String, List<String>> studentTeacherMapping;
-    public StudentRepository(){
-        this.studentMap=new HashMap<>();
-        this.teacherMap=new HashMap<>();
-        this.studentTeacherMapping=new HashMap<>();
+    HashMap<String,Student> studentDb = new HashMap<>();
+
+    HashMap<String,Teacher> teacherDb = new HashMap<>();
+
+    HashMap<String,List<String>> teacherStudent = new HashMap<>();
+
+
+    public void addStudent(Student student){
+
+        String key = student.getName();
+        studentDb.put(key,student);
+        return ;
     }
-    public void saveStudent(Student student){
-        studentMap.put(student.getName(),student);
+
+    public void addTeacher(Teacher teacher){
+
+        String key = teacher.getName();
+        teacherDb.put(key,teacher);
+        return ;
     }
-    public void saveTeacher(Teacher teacher){
-        teacherMap.put(teacher.getName(),teacher);
-    }
-    public void saveStudentTeacherPair(String student,String teacher){
-        if(studentMap.containsKey(student)&&teacherMap.containsKey(teacher)) {
 
-            List<String> currentStudentByTeacher = new ArrayList<>();
+    public void addStudentTeacherPair(String student,String teacher){
 
-            if (studentTeacherMapping.containsKey(teacher))
-                currentStudentByTeacher = studentTeacherMapping.get(teacher);
+        List<String> students = teacherStudent.get(teacher);
 
-            currentStudentByTeacher.add(student);
-
-            studentTeacherMapping.put(student, currentStudentByTeacher);
+        if(students==null){
+            students = new ArrayList<>();
         }
-        }
-        public Student findStudent(String student){
-        return studentMap.get(student);
-    }
-    public Teacher findTeacher(String teacher){
-        return teacherMap.get(teacher);
-    }
-    public List<String> getStudentsFromTeacher(String teacher){
-        return studentTeacherMapping.get(teacher);
-    }
-    public void deleteTeacher(String teacher){
-        List<String> students = new ArrayList<String>();
-        if(studentTeacherMapping.containsKey(teacher)){
-            //1. Find the movie names by director from the pair
-            students = studentTeacherMapping.get(teacher);
 
-            //2. Deleting all the movies from movieDb by using movieName
-            for(String movie: students){
-                if(studentMap.containsKey(movie)){
-                   studentMap.remove(movie);
-                }
+        students.add(student);
+
+        teacherStudent.put(teacher,students);
+
+
+        return ;
+    }
+
+    public void removeTeacher(String teacher){
+
+        for(String str : teacherStudent.get(teacher)){
+
+            studentDb.remove(str);
+
+        }
+        teacherStudent.remove(teacher);
+        teacherDb.remove(teacher);
+    }
+
+    public void removeAllTeacher(){
+
+
+        for(String teacher : teacherDb.keySet())
+        {
+            for(String str : teacherStudent.get(teacher)){
+
+                studentDb.remove(str);
+
             }
+            teacherStudent.remove(teacher);
+            teacherDb.remove(teacher);
 
-            //3. Deleteing the pair
-            studentTeacherMapping.remove(teacher);
-        }
-        if(studentTeacherMapping.containsKey(teacher)){
-            studentTeacherMapping.remove(teacher);
         }
     }
-    public void deleteAll(){
-        HashSet<String> studentSet = new HashSet<>();
-        teacherMap = new HashMap<>();
-        for(String teacher: studentTeacherMapping.keySet()){
-            for(String movie: studentTeacherMapping.get(teacher)){
-                studentSet.add(movie);
-            }
-        }
-        for(String movie: studentSet){
-            if(studentMap.containsKey(movie)){
-                studentMap.remove(movie);
-            }
-        }
-        studentTeacherMapping = new HashMap<>();
+
+    public Student getStudentByName(String name){
+        return studentDb.get(name);
     }
+
+    public Teacher getTeacherByName(String name){
+        return teacherDb.get(name);
+    }
+
+    public List<String> getStudentsByTeacherName(String teacher){
+        return teacherStudent.get(teacher);
+    }
+
     public List<String> getAllStudents(){
-        List<String> students=new ArrayList<>();
-        for(String s:studentMap.keySet()){
+
+        List<String> students = new ArrayList<>();
+
+        for(String s : studentDb.keySet()){
             students.add(s);
         }
         return students;
